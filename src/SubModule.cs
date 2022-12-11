@@ -36,6 +36,7 @@ namespace NobleTitles
                 Util.Log.Print($"Patch was required! Canceling {DisplayName}...");
                 canceled = true;
             }
+            new Harmony("NobleTitles").PatchAll();
         }
 
         protected override void OnBeforeInitialModuleScreenSetAsRoot()

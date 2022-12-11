@@ -140,7 +140,7 @@ namespace NobleTitles
                     !c.IsUnderMercenaryService &&
                     c.Leader != null &&
                     c.Leader.IsAlive &&
-                    c.Leader.IsNoble)
+                    c.Leader.Occupation == Occupation.Lord)
                 .OrderBy(c => GetFiefScore(c))
                 .ThenBy(c => c.Renown)
                 .Select(c => c.Leader)
@@ -185,11 +185,11 @@ namespace NobleTitles
             }
 
             // Finally, the most obvious, the ruler (King) title:
-            if (kingdom.Ruler != null &&
-                !Kingdom.All.Where(k => k != kingdom).SelectMany(k => k.Lords).Where(h => h == kingdom.Ruler).Any()) // fix for stale ruler status in defunct kingdoms
+            if (kingdom?.RulingClan != null &&
+                !Kingdom.All.Where(k => k != kingdom).SelectMany(k => k.Lords).Where(h => h == kingdom.RulingClan.Leader).Any()) // fix for stale ruler status in defunct kingdoms
             {
-                AssignRulerTitle(kingdom.Ruler, titleDb.GetKingTitle(kingdom.Culture));
-                tr.Add(GetHeroTrace(kingdom.Ruler, "KING"));
+                AssignRulerTitle(kingdom.RulingClan.Leader, titleDb.GetKingTitle(kingdom.Culture));
+                tr.Add(GetHeroTrace(kingdom.RulingClan.Leader, "KING"));
             }
 
             Util.Log.Print(tr);
@@ -264,7 +264,7 @@ namespace NobleTitles
             if (unregisterTitle)
                 assignedTitles.Remove(hero);
 
-            hero.SetName(new TextObject(name.Remove(0, title.Length)));
+            hero.SetName(new TextObject(name.Remove(0, title.Length)), new TextObject(hero.FirstName.ToString()));
         }
 
         private readonly Dictionary<Hero, string> assignedTitles = new Dictionary<Hero, string>();
